@@ -1,232 +1,4 @@
-FA1:
-
-def display(board):
-    for i in range(3):
-        print(board[i * 3], "|", board[i * 3 + 1], "|", board[i * 3 + 2])
-        if i < 2:
-            print("---------")
-
-def winner(board):
-    win = [(0,1,2), (3,4,5), (6,7,8),
-           (0,3,6), (1,4,7), (2,5,8),
-           (0,4,8), (2,4,6)]
-
-    for a, b, c in win:
-        if board[a] == board[b] == board[c] and board[a] != " ":
-            return board[a]
-    return None
-
-def heuristic(board):
-    if winner(board) == "O":
-        return 10
-    if winner(board) == "X":
-        return -10
-    return 0
-
-def astar(board):
-    best_move = -1
-    best_score = -1000
-
-    for i in range(9):
-        if board[i] == " ":
-            board[i] = "O"
-            score = heuristic(board)
-
-            if score == 0:
-                for j in range(9):
-                    if board[j] == " ":
-                        board[j] = "X"
-                        if winner(board) == "X":
-                            score = -10
-                        board[j] = " "
-
-            if score > best_score:
-                best_score = score
-                best_move = i
-
-            board[i] = " "
-
-    return best_move
-
-board = [" "] * 9
-
-while True:
-    display(board)
-
-    move = int(input("Enter position (1-9): ")) - 1
-
-    if move < 0 or move > 8 or board[move] != " ":
-        print("Invalid move!")
-        continue
-
-    board[move] = "X"
-
-    if winner(board) == "X":
-        display(board)
-        print("You win!")
-        break
-
-    if " " not in board:
-        display(board)
-        print("Draw!")
-        break
-
-    move = astar(board)
-
-    if move != -1:
-        board[move] = "O"
-
-    if winner(board) == "O":
-        display(board)
-        print("Computer wins!")
-        break
-
-    if " " not in board:
-        display(board)
-        print("Draw!")
-        break
-
-
-FA2:
-
-def heuristic(state):
-    return state[0] + state[1]
-
-
-def valid(m, c):
-    if m < 0 or c < 0 or m > 3 or c > 3:
-        return False
-    if m > 0 and m < c:
-        return False
-    if (3 - m) > 0 and (3 - m) < (3 - c):
-        return False
-    return True
-
-
-def astar():
-    start = (3, 3, 1)
-    goal = (0, 0, 0)
-
-    open_list = [(heuristic(start), 0, start, [])]
-    visited = []
-
-    moves = [(1, 0), (2, 0), (0, 1),
-             (0, 2), (1, 1)]
-
-    while open_list:
-        open_list.sort()
-        f, g, state, path = open_list.pop(0)
-
-        if state in visited:
-            continue
-
-        visited.append(state)
-        path = path + [state]
-
-        if state == goal:
-            print("Solution Path:")
-            for s in path:
-                print(s)
-            print("\nState Graph:")
-            for i in range(len(path) - 1):
-                print(path[i], "-->", path[i + 1])
-            print("\nTotal steps:", len(path) - 1)
-            return
-
-        m, c, boat = state
-
-        for dm, dc in moves:
-            if boat == 1:
-                new_state = (m - dm, c - dc, 0)
-            else:
-                new_state = (m + dm, c + dc, 1)
-
-            if valid(new_state[0], new_state[1]):
-                if new_state not in visited:
-                    new_g = g + 1
-                    new_f = new_g + heuristic(new_state)
-                    open_list.append(
-                        (new_f, new_g, new_state, path)
-                    )
-
-    print("No solution found")
-
-
-astar()
-
-FA3:
-
-def heuristic(state):
-    goal = [1, 2, 3, 4, 5, 6, 7, 8, 0]
-    count = 0
-
-    for i in range(9):
-        if state[i] != 0 and state[i] != goal[i]:
-            count += 1
-
-    return count
-
-
-def astar():
-    start = [1, 2, 3, 4, 0, 6, 7, 5, 8]
-    goal = [1, 2, 3, 4, 5, 6, 7, 8, 0]
-
-    open_list = [(heuristic(start), 0, start, [])]
-    visited = []
-
-    while open_list:
-        open_list.sort(key=lambda x: x[0])
-        f, g, state, path = open_list.pop(0)
-
-        if state in visited:
-            continue
-
-        visited.append(state)
-        path = path + [state]
-
-        if state == goal:
-            print("Solution Path:")
-            for s in path:
-                print(s[0:3])
-                print(s[3:6])
-                print(s[6:9])
-                print()
-            print("Total steps:", len(path) - 1)
-            return
-
-        blank = state.index(0)
-        row = blank // 3
-        col = blank % 3
-
-        moves = []
-
-        if row > 0:
-            moves.append(blank - 3)
-        if row < 2:
-            moves.append(blank + 3)
-        if col > 0:
-            moves.append(blank - 1)
-        if col < 2:
-            moves.append(blank + 1)
-
-        for pos in moves:
-            new_state = state.copy()
-            new_state[blank] = new_state[pos]
-            new_state[pos] = 0
-
-            if new_state not in visited:
-                new_g = g + 1
-                new_f = new_g + heuristic(new_state)
-                open_list.append(
-                    (new_f, new_g, new_state, path)
-                )
-
-    print("No solution found")
-
-
-astar()
-
-FA4:
+FAI 4
 
 # Means-Ends Analysis for a Domestic Robot
 
@@ -298,126 +70,106 @@ if place2 == goal:
 else:
     print("Goal Not Achieved!")
 
-FA5:
+
+
+FAI 5
 
 # Expert System: Medical Diagnosis of 10 Diseases
+# Educational example only
 
-print("MEDICAL DIAGNOSIS EXPERT SYSTEM")
-print("Answer each question with yes or no.")
+print("MEDICAL EXPERT SYSTEM")
+print("Answer yes or no (lowercase).\n")
 
-fever = input("Do you have fever? ")
-cough = input("Do you have cough? ")
-cold = input("Do you have a runny nose or cold? ")
-headache = input("Do you have headache? ")
-body_pain = input("Do you have body pain? ")
-sore_throat = input("Do you have sore throat? ")
-itching = input("Do you have skin itching or rash? ")
-stomach_pain = input("Do you have stomach pain? ")
-vomiting = input("Do you have vomiting? ")
-loose_motion = input("Do you have loose motion? ")
-joint_pain = input("Do you have joint pain? ")
-sneezing = input("Do you have frequent sneezing? ")
+fever = input("Fever? ")
+cough = input("Cough? ")
+runny_nose = input("Runny nose? ")
+headache = input("Headache? ")
+body_ache = input("Body aches? ")
+sore_throat = input("Sore throat? ")
+rash = input("Rash? ")
+stomach_pain = input("Stomach pain? ")
+vomiting = input("Vomiting? ")
+diarrhea = input("Diarrhea? ")
+joint_pain = input("Joint pain? ")
+sneezing = input("Sneezing? ")
 
-print("\nPossible Diagnosis:")
+print("\nPossible result:")
 
-if fever == "yes" and body_pain == "yes" and headache == "yes":
-    print("Possible disease: Dengue or another febrile illness")
-
-elif fever == "yes" and cough == "yes" and body_pain == "yes":
-    print("Possible disease: Influenza (Flu)")
-
-elif fever == "yes" and cold == "yes" and cough == "yes":
-    print("Possible disease: Common respiratory infection")
-
-elif cough == "yes" and sore_throat == "yes" and fever == "no":
-    print("Possible disease: Throat infection")
-
-elif cold == "yes" and sneezing == "yes" and fever == "no":
-    print("Possible disease: Common cold or allergic rhinitis")
-
-elif itching == "yes":
-    print("Possible disease: Skin allergy or dermatitis")
-
-elif stomach_pain == "yes" and loose_motion == "yes":
-    print("Possible disease: Gastroenteritis")
-
-elif vomiting == "yes" and loose_motion == "yes":
-    print("Possible disease: Possible stomach infection")
-
-elif fever == "yes" and headache == "yes" and vomiting == "yes":
-    print("Possible disease: Requires medical evaluation for causes such as malaria")
-
-elif joint_pain == "yes" and fever == "yes":
-    print("Possible disease: Viral infection, including chikungunya")
-
+if fever == "yes" and body_ache == "yes" and cough == "yes":
+    print("Possible match: Influenza (flu)")
+elif runny_nose == "yes" and sneezing == "yes":
+    print("Possible match: Allergic rhinitis")
+elif sore_throat == "yes" and fever == "yes":
+    print("Possible match: Strep throat")
+elif fever == "yes" and headache == "yes" and rash == "yes":
+    print("Possible match: Dengue")
+elif fever == "yes" and rash == "yes":
+    print("Possible match: Chickenpox")
+elif stomach_pain == "yes" and vomiting == "yes" and diarrhea == "yes":
+    print("Possible match: Stomach infection")
+elif headache == "yes" and vomiting == "yes":
+    print("Possible match: Migraine")
+elif cough == "yes" and fever == "yes":
+    print("Possible match: Bronchitis")
+elif fever == "yes" and joint_pain == "yes" and rash == "yes":
+    print("Possible match: Chikungunya")
+elif cough == "yes" and runny_nose == "yes" and sore_throat == "yes":
+    print("Possible match: Common cold")
 else:
-    print("Disease cannot be identified from these symptoms.")
-    print("Please consult a qualified doctor.")
+    print("No rule matched.")
 
-print("\nNote: This program is for educational purposes only.")
-print("It cannot provide a confirmed medical diagnosis.")
+print("\nFor educational use only; this program cannot diagnose illness.")
 
 
-FA6:
+FAI 6
 
-# Alpha-Beta Pruning Algorithm
+def min_value(a, b, alpha, node):
+    best = float('inf')
 
-def alphabeta(tree, level, index, maximizing, alpha, beta):
+    for i, value in enumerate([a, b]):
+        best = min(best, value)
+        beta = best
 
-    # Leaf node
-    if level == 2:
-        print("Visited leaf:", tree[index])
-        return tree[index]
+        if beta <= alpha:
+            print("Pruned branch at", node)
+            return best, True
 
-    if maximizing:
-        best = -999
-
-        for i in range(2):
-            value = alphabeta(tree, level + 1,
-                              index * 2 + i, False,
-                              alpha, beta)
-
-            best = max(best, value)
-            alpha = max(alpha, best)
-
-            if beta <= alpha:
-                print("Pruned a branch at MAX node")
-                break
-
-        return best
-
-    else:
-        best = 999
-
-        for i in range(2):
-            value = alphabeta(tree, level + 1,
-                              index * 2 + i, True,
-                              alpha, beta)
-
-            best = min(best, value)
-            beta = min(beta, best)
-
-            if beta <= alpha:
-                print("Pruned a branch at MIN node")
-                break
-
-        return best
+    return best, False
 
 
-# Leaf values from left to right
-tree = [3, 5, 2, 9]
+print("ALPHA-BETA PRUNING")
 
-print("Game tree leaf values:", tree)
+print("\nEnter values for 4 leaf nodes:")
+a = int(input("A1: "))
+b = int(input("A2: "))
+c = int(input("B1: "))
+d = int(input("B2: "))
 
-result = alphabeta(tree, 0, 0, True, -999, 999)
+alpha = float('-inf')
 
-print("Best value:", result)
+# First MIN node
+left, p1 = min_value(a, b, alpha, "A")
+
+alpha = max(alpha, left)
+
+# Second MIN node
+right, p2 = min_value(c, d, alpha, "B")
+
+# Root MAX node
+result = max(left, right)
+
+print("\nGAME TREE")
+print("             MAX =", result)
+print("           /       \\")
+print("        MIN         MIN")
+print("       /  \\        /  \\")
+print("      ", a, "  ", b, "     ", c, "  ", d)
+
+print("\nFinal Answer:", result)
+print("Alpha-Beta Pruning completed.")
 
 
-FA7:
-
-# Syntax Analysis of Assertive English Statements
-
+FAI 7
 text = input("Enter an assertive sentence: ")
 
 # Stage 1: Sentence Segmentation
@@ -461,10 +213,8 @@ for sentence in sentences:
 print("\nSyntax Analysis Completed")
 
 
-FA8:
 
-# Hill Climbing Algorithm
-
+FAI 8
 def hill_climbing():
     # Initial state
     current = 0
@@ -503,77 +253,89 @@ def hill_climbing():
 hill_climbing()
 
 
-FA9:
 
-# Predicate Logic using PROLOG Concepts
+FAI 9
 
-# Facts
-parent = [
-    ("john", "mary"),
-    ("john", "peter"),
-    ("mary", "sam"),
-    ("peter", "lisa")
-]
+% Predicate Logic using PROLOG
 
-male = ["john", "peter", "sam"]
-female = ["mary", "lisa"]
+% Facts
+parent(john, sam).
+parent(john, peter).
+parent(mary, sam).
+parent(peter, lisa).
+parent(mary,peter).
 
-# Rules
-def father(x, y):
-    return (x, y) in parent and x in male
+male(john).
+male(peter).
+male(sam).
 
-def mother(x, y):
-    return (x, y) in parent and x in female
+female(mary).
+female(lisa).
 
-def child(x, y):
-    return (y, x) in parent
+% Rules
+father(X, Y) :-
+    parent(X, Y),
+    male(X).
 
-def sibling(x, y):
-    for p1 in parent:
-        for p2 in parent:
-            if p1[0] == p2[0] and p1[1] == x and p2[1] == y and x != y:
-                return True
-    return False
+mother(X, Y) :-
+    parent(X, Y),
+    female(X).
 
-# Queries
-print("Facts:")
-print("Parent:", parent)
-print("Male:", male)
-print("Female:", female)
+child(X, Y) :-
+    parent(Y, X).
 
-print("\nQueries:")
-print("Is John the father of Mary?", father("john", "mary"))
-print("Is Mary the mother of Sam?", mother("mary", "sam"))
-print("Is Sam the child of Mary?", child("sam", "mary"))
-print("Are Mary and Peter siblings?", sibling("mary", "peter"))
-print("Are Mary and Peter siblings?", sibling("mary", "peter"))
+sibling(X, Y) :-
+    parent(P, X),
+    parent(P, Y),
+    X \= Y.
+
+% Queries to execute separately:
+% father(john, peter).
+% mother(mary, sam).
+% child(sam, mary).
+% sibling(mary, peter).
 
 
-FA10:
 
-# Expert System using PROLOG Concepts
-# Example: Animal Identification
+FAI 10
 
-print("ANIMAL EXPERT SYSTEM")
-print("Answer with yes or no")
+%Expert systems using PROLOG
 
-has_hair = input("Does the animal have hair? ")
-gives_milk = input("Does it give milk? ")
-has_feathers = input("Does it have feathers? ")
-can_fly = input("Can it fly? ")
-lives_water = input("Does it live in water? ")
+%Facts
+symptom(fever).
+symptom(cold).
+symptom(headache).
+symptom(bodypain).
+symptom(rashes).
+symptom(joint_pains).
+symptom(vomiting).
 
-# Expert System Rules
-if has_hair == "yes" and gives_milk == "yes":
-    print("Animal is a Mammal")
+%Rules
 
-elif has_feathers == "yes" and can_fly == "yes":
-    print("Animal is a Bird")
+disease(flu) :-
+	symptom(fever),
+	symptom(cold).
 
-elif lives_water == "yes":
-    print("Animal may be a Fish")
+disease(dengue) :-
+	symptom(fever),
+	symptom(bodypain),
+	symptom(headache).
 
-else:
-    print("Animal could not be identified")
+disease(migraine) :-
+	symptom(vomiting),
+	symptom(headache).
 
-print("Expert System Completed")
+disease(chickenpox) :-
+	symptom(rashes),
+	symptom(joint_pains),
+	symptom(fever).
+
+%diagnosis rule
+diagnose(X) :-
+    disease(X).
+
+
+%Queries
+%?- diagnose(X).
+
+
